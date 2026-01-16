@@ -20,7 +20,6 @@
 - 🔄 **API Integration** - Seamless Frappe API calls with `frappe-react-sdk`
 - 🧭 **React Navigation** - Pre-configured navigation with Stack + Bottom Tabs
 - 🔒 **Secure Storage** - Token management with `expo-secure-store`
-- 📦 **TypeScript** - Full type safety throughout the codebase
 - 🔄 **Auto Token Refresh** - Automatic token refresh on app launch
 
 ## Quick Start
@@ -37,8 +36,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/frappe-expo-template.git
-   cd frappe-expo-template
+   git clone https://github.com/suhail135/expo-frappe.git
+   cd expo-frappe
    ```
 
 2. **Install dependencies**
