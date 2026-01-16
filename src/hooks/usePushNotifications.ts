@@ -15,7 +15,7 @@ export const usePushNotifications = (isAuthenticated: boolean): PushNotification
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
 
   const notificationListener = useRef<Notifications.EventSubscription | undefined>(undefined);
-  const responseListener = useRef<Notifications.EventSubscription | undefined>();
+  const responseListener = useRef<Notifications.EventSubscription | undefined>(undefined);
 
   async function registerForPushNotificationsAsync() {
     let token;
