@@ -3,9 +3,14 @@ import { HeaderButton, Text } from '@react-navigation/elements';
 import {
   createStaticNavigation,
   StaticParamList,
+  NavigationContainer,
+  DarkTheme,
+  DefaultTheme,
+  Theme,
+  LinkingOptions,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image } from 'react-native';
+import { Image, ActivityIndicator, View } from 'react-native';
 import bell from '../assets/bell.png';
 import newspaper from '../assets/newspaper.png';
 import { Home } from './screens/Home';
@@ -13,6 +18,8 @@ import { Profile } from './screens/Profile';
 import { Settings } from './screens/Settings';
 import { Updates } from './screens/Updates';
 import { NotFound } from './screens/NotFound';
+import { Login } from './screens/Login';
+import { useAuth } from '../auth';
 
 const HomeTabs = createBottomTabNavigator({
   screens: {
@@ -61,14 +68,8 @@ const RootStack = createNativeStackNavigator({
     },
     Profile: {
       screen: Profile,
-      linking: {
-        path: ':user(@[a-zA-Z0-9-_]+)',
-        parse: {
-          user: (value) => value.replace(/^@/, ''),
-        },
-        stringify: {
-          user: (value) => `@${value}`,
-        },
+      options: {
+        title: 'Profile',
       },
     },
     Settings: {
@@ -96,10 +97,54 @@ const RootStack = createNativeStackNavigator({
 
 export const Navigation = createStaticNavigation(RootStack);
 
+// Auth Stack for unauthenticated users
+const AuthStack = createNativeStackNavigator({
+  screens: {
+    Login: {
+      screen: Login,
+      options: {
+        headerShown: false,
+      },
+    },
+  },
+});
+
+const AuthNavigation = createStaticNavigation(AuthStack);
+
 type RootStackParamList = StaticParamList<typeof RootStack>;
+type AuthStackParamList = StaticParamList<typeof AuthStack>;
+
+// Navigation wrapper that handles auth state (Route Guard)
+interface NavigationProps {
+  theme: Theme;
+  linking: LinkingOptions<RootStackParamList>;
+  onReady?: () => void;
+}
+
+export function AppNavigation({ theme, linking, onReady }: NavigationProps) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading screen while checking auth state
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  // Show auth navigator if not authenticated
+  if (!isAuthenticated) {
+    return <AuthNavigation theme={theme} onReady={onReady} />;
+  }
+
+  // Show main app navigator if authenticated
+  return <Navigation theme={theme} linking={linking} onReady={onReady} />;
+}
 
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
+    interface AuthParamList extends AuthStackParamList {}
   }
 }
